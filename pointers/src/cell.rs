@@ -26,7 +26,9 @@ impl<T> Cell<T> {
 
     pub fn set(&self, value: T) {
         // I have checked that no one else is mutating
-        // the value.
+        // the value. Because of !sync, no other thread
+        // is mutating the value and we are not invalidating
+        // any references because we never give any one out.
         unsafe {
             *self.value.get() = value;
         }
@@ -36,6 +38,9 @@ impl<T> Cell<T> {
     where
         T: Copy,
     {
+        // We know no one else is modifying this value 
+        // since only this thread can mutate and it is
+        // executing this function instead.
         unsafe { *self.value.get() }
     }
 }
@@ -43,6 +48,7 @@ impl<T> Cell<T> {
 #[cfg(test)]
 mod test {
     // use super::Cell;
+    // #[test]
     // fn bad() {
     // let x = std::sync::Arc::new(Cell::new(42));
     // nothing is preventing this
